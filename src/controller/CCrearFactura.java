@@ -39,7 +39,7 @@ public class CCrearFactura extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+			// TODO Auto-generated method stub
 			String comprador=request.getParameter("comprador");
 			String direccion=request.getParameter("direccion");
 			String telefono=request.getParameter("telefono");
@@ -56,14 +56,13 @@ public class CCrearFactura extends HttpServlet {
 			int idFactura= factura.insertFactura();
 			
 			JSONArray arrCarrito =new JSONArray(carrito);
-	
 			
+			double subtotal =0;
+			ProductoFacturaModel lineaFactura= new ProductoFacturaModel();
 			//recorrer el carrito y hacer inserts en producto factura
 			
 			for (int i=0; i <arrCarrito.length();i++)  {
-				
-				ProductoFacturaModel lineaFactura= new ProductoFacturaModel();
-				
+								
 				JSONObject compra=arrCarrito.getJSONObject(i);
 				
 				lineaFactura.setId_factura(idFactura);
@@ -71,18 +70,19 @@ public class CCrearFactura extends HttpServlet {
 				lineaFactura.setNombre(compra.getString("nombre"));
 				lineaFactura.setCantidad(compra.getInt("cantidad"));
 				lineaFactura.setPrecio(compra.getDouble("precio"));
-				
+				subtotal= subtotal + compra.getDouble("precio");
 				//System.out.println(compra.toString());
 				
 				lineaFactura.insertLinea();
 			}
-			request.setAttribute("idFactura", idFactura);
-			request.getRequestDispatcher("CVerFactura").forward(request, response);
 			
+			request.setAttribute("subtotal", subtotal);
+			request.setAttribute("factura", factura.getFactura());
+			request.setAttribute("lineaFactura", lineaFactura.getLineaFactura());
+			request.setAttribute("idFactura", idFactura);
+			request.getRequestDispatcher("view/vFactura.jsp").forward(request, response);
 			
 			//System.out.println("comp:" + comprador + " Carrito:" +carrito );
-			
-			
 	}
 
 }

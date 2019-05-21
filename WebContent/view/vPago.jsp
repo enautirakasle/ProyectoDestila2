@@ -100,6 +100,7 @@
         	 	url:'CCrearFactura',
         	 	success: function(result){
         	 		alert('bien');
+        	 		window.location.replace("view/vFactura.jsp");
         	 	},
         	 	error: function(xhr){
         	 		alert('An error occured:'+ xhr.status);
