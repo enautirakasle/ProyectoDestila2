@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.5
+-- version 4.8.3
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-05-2019 a las 09:33:13
--- Versión del servidor: 10.1.39-MariaDB
--- Versión de PHP: 7.3.5
+-- Tiempo de generación: 21-05-2019 a las 14:27:43
+-- Versión del servidor: 10.1.35-MariaDB
+-- Versión de PHP: 7.1.21
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -30,13 +30,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `EliminarFactura` (`_id` INT(11))  B
 DELETE FROM facturas WHERE id = _id;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertarFactura` (IN `comprador` INT, IN `direccion` INT, IN `telefono` INT, IN `dni` INT)  NO SQL
-BEGIN
-INSERT into facturas(facturas.fecha_compra, facturas.comprador, facturas.direccion,facturas.telefono, facturas.dni)
-VALUES(now(), comprador, direccion ,telefono, dni)
-
-;
-SELECT last_insert_id() as idFactura;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `NuevaFactura` (IN `_cantidadTot` INT(11), IN `_precioTot` DOUBLE, IN `_productos` VARCHAR(40), IN `_fecha_compra` DATE, IN `_comprador` VARCHAR(50))  BEGIN 
+INSERT INTO facturas (cantidadTot, precioTot, productos, fecha_compra, comprador) VALUES (_cantidadTot, _precioTot, _productos, _fecha_compra, _comprador);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `OrdenarPorPrecioAscendente` ()  BEGIN
@@ -47,8 +42,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `OrdenarPorPrecioDescendente` ()  BE
 SELECT * FROM productos ORDER BY precio DESC;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `SeleccionarCategoria` (IN `categoria` INT)  BEGIN
-SELECT productos.* FROM productos JOIN categorias ON productos.id_categoria = categorias.id WHERE categorias.nombre = categoria;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SeleccionarCervezas` ()  BEGIN
+SELECT productos.* FROM productos JOIN categorias ON productos.id_categoria = categorias.id WHERE categorias.nombre = 'Cerveza';
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SeleccionarLicores` ()  BEGIN
+SELECT productos.* FROM productos JOIN categorias ON productos.id_categoria = categorias.id WHERE categorias.nombre = 'Licor';
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SeleccionarSidras` ()  BEGIN
+SELECT productos.* FROM productos JOIN categorias ON productos.id_categoria = categorias.id WHERE categorias.nombre = 'Sidra';
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SeleccionarVinos` ()  BEGIN
+SELECT productos.* FROM productos JOIN categorias ON productos.id_categoria = categorias.id WHERE categorias.nombre = 'Vino';
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SellecionarTodosLosProductos` ()  BEGIN 
@@ -76,7 +83,9 @@ INSERT INTO `categorias` (`id`, `nombre`) VALUES
 (1, 'Vino'),
 (2, 'Licor'),
 (3, 'Cerveza'),
-(4, 'Crema');
+(4, 'Crema'),
+(5, 'Vodka'),
+(6, 'Hidromiel');
 
 -- --------------------------------------------------------
 
@@ -86,22 +95,21 @@ INSERT INTO `categorias` (`id`, `nombre`) VALUES
 
 CREATE TABLE `facturas` (
   `id` int(11) NOT NULL,
+  `cantidadTot` int(11) NOT NULL,
+  `precioTot` double NOT NULL,
+  `productos` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
   `fecha_compra` date NOT NULL,
   `comprador` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `direccion` varchar(128) COLLATE utf8_unicode_ci NOT NULL,
-  `telefono` int(9) NOT NULL,
-  `dni` varchar(20) COLLATE utf8_unicode_ci NOT NULL
+  `telefono` int(9) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `facturas`
 --
 
-INSERT INTO `facturas` (`id`, `fecha_compra`, `comprador`, `direccion`, `telefono`, `dni`) VALUES
-(1, '2019-05-15', 'Karlos Isla', 'sdgvdvafvjhg', 889889889, '151551534v'),
-(2, '2019-05-15', 'Carlos Isla', 'sdgvdvafvjhg', 889889889, '45464432v'),
-(3, '2019-05-20', '0', '0', 0, ''),
-(4, '2019-05-20', '0', '0', 0, '12');
+INSERT INTO `facturas` (`id`, `cantidadTot`, `precioTot`, `productos`, `fecha_compra`, `comprador`, `direccion`, `telefono`) VALUES
+(1, 12, 12, 'aaaa', '2019-05-15', 'dsdfds', 'sfsdf', 666666666);
 
 --
 -- Disparadores `facturas`
@@ -121,7 +129,7 @@ CREATE TABLE `facturas_eliminadas` (
   `id` int(11) NOT NULL,
   `cantidadTot` int(11) NOT NULL,
   `precioTot` double NOT NULL,
-  `productos` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `productos` varchar(40) NOT NULL,
   `fecha_compra` date NOT NULL,
   `comprador` varchar(50) NOT NULL,
   `direccion` varchar(128) NOT NULL,
@@ -166,7 +174,19 @@ INSERT INTO `productos` (`id`, `nombre`, `descripcion`, `img`, `precio`, `id_cat
 (7, 'Libellis Gin', 'Descubre la magia de Libellis Premium Gin, la ginebra premium que te harán cambiar la percepción de la realidad. Siente la exquisitez de su sabor y aroma y deléitate con sus sorprendentes efectos visuales.', 'img/libellis.jpg', 16.95, 2),
 (8, 'Bock Damm', 'Nacida en Einbeck, consagrada en Munich.\r\nEn el siglo XIV la ciudad de Einbeck se hizo famosa por sus cervezas de excelente calidad. Munich no conseguía competir con estas hasta que el duque Maximiliano I decidió montar su propia cervecería con el maestro cervecero de Einbeck, Elias Pichler. Él fue el encargado de trasladar todos los conocimientos y acabó consagrando Munich como el gran referente de este estilo.', 'img/bockdamm.jpg', 0.61, 3),
 (9, 'Leche De Pantera', 'Leche de Pantera es una sutil y agradable crema de licor de leche condensada elaborada a partir de la destilería artesanal de Martes Santo, originaria de la Legión Española y convertida en bebida tradicional del Tercio. Una de sus principales características es que posee un sabor inigualable, de carácter gourmet para llevar hasta nuestra comodidad un néctar exquisito.', 'img/lechedepantera.jpg', 14, 4),
-(10, 'Gin Eco Martes Santo', 'Ginebra Ecológica Martes Santo Gin Excelent 100% Ecológica Certificada.\r\n\r\nSurge tras destilar en alambique centenario de cobre calentado por leña de encina, el mejor alcohol de grano junto con botánicos de muy alta calidad, previamente seleccionados ( enebro, corteza de mandarina, corteza de lima, canela, raíz de angélica, pétalos de jazmín, vainilla, nueces….). Todos ellos ecológicos 100% certificados.\r\n\r\nDando lugar a la primera ginebra española 100% ecológica certificada. Muy fina y equilibrada, con toques mediterráneos y exóticos, completamente distinta a las existentes en el mercado.\r\n\r\nEnvase de 70 cl. 40º', 'img/gineco.jpg', 35, 2);
+(10, 'Gin Eco Martes Santo', 'Ginebra Ecológica Martes Santo Gin Excelent 100% Ecológica Certificada.\r\n\r\nSurge tras destilar en alambique centenario de cobre calentado por leña de encina, el mejor alcohol de grano junto con botánicos de muy alta calidad, previamente seleccionados ( enebro, corteza de mandarina, corteza de lima, canela, raíz de angélica, pétalos de jazmín, vainilla, nueces….). Todos ellos ecológicos 100% certificados.\r\n\r\nDando lugar a la primera ginebra española 100% ecológica certificada. Muy fina y equilibrada, con toques mediterráneos y exóticos, completamente distinta a las existentes en el mercado.\r\n\r\nEnvase de 70 cl. 40º', 'img/gineco.jpg', 35, 2),
+(11, 'Absolut Elyx', 'Absolut Elyx es un vodka de lujo cuya elaboración se basa en los principios de la calidad, la integridad y la artesanía, y su destilación manual se realiza en un alambique de cobre', 'img/absolutelyx.jpg', 42.9, 5),
+(12, 'Vodka crystal head', 'Vodka destilado cuatro veces, y tres veces filtrado con una variedad de cristales de cuarzo conocidos como diamantes Herkimer.', 'img/crystalhead.jpg', 42.75, 5),
+(13, 'Royal Dragon Vodka Elite', 'Vodka de alta calidad.', 'img/royaldragon.jpg', 34.34, 5),
+(14, 'Mamont Vodka', 'Gran sabor\r\nMáxima calidad\r\nPara cualquier ocasión', 'img/mamont.jpg', 47.9, 5),
+(15, 'Kraken Black Spiced Rum ', 'Importado desde el Caribe y envejecido en barricas de roble entre 12 a 14 meses\r\nKraken Rum cuenta con 13 especias exóticas entre las que encontramos la canela, el jengibre y el clavo\r\nLlamado así en honor a la bestia del mar, sus mitos e increíbles leyendas. Kraken Rum es intenso, oscuro, misterioso y salvaje', 'img/kraken.jpg', 21.38, 2),
+(16, 'Grand Old Parr Scotch Whisky', 'Graduación:40º\r\nCapacidad: 100cl\r\nColor dorado', 'img/oldparr.jpg', 33, 2),
+(17, 'Suntory Whisky Toki', 'Color dorado claro\r\nEn nariz de pomelo, ciruela amarilla, madera de vainilla, gotas de pera, hierbas frescas de jardín\r\nEl paladar es cruasanes de almendras, pomelo blanco, uvas verdes y manzanas\r\nUn poco de especia pimienta-vainilla-jengibre y más notas de mentol-albahaca\r\nSedoso con un final dulce y picante sutil', 'img/suntory.jpg', 38.21, 2),
+(18, 'Yamazakura Whisky ', 'Graduación: 40º\r\nCapacidad: 70CL\r\nYamazakura + Gb 0,7 L 40º', 'img/yamazakura.jpg', 47.48, 2),
+(19, 'Hidromiel Clásica', 'Valhalla Clasica: Inspirado en el Hidromiel que bebido en la antigüedad por grandes personajes como Julio Cesar.', 'img/hidromielclasica.jpg', 7.99, 6),
+(20, 'Hidromiel Tradicional', 'Inspirado en el Hidromiel que bebieron los vikingos, como el rey Ragnar Lodbrok.', 'img/hidromieltradicional.jpg', 7.99, 6),
+(21, 'Hidromiel Doble Miel', 'Botella de 75 cl de Valhalla Doble Miel. También conocido como melomiel en la Antigüedad. Como su nombre indica, se elabora a partir de una gran cantidad de miel natural lo que le otorga un sabor y aroma intensos a miel.', 'img/hidromieldoble.jpg', 11.99, 6),
+(22, 'Hidromiel Freyja', 'Venta de Botella de 75cl de Hidromiel Freyja. Nuestro homenaje a Freyja una de la diosas mayores de la mitología nórdica y germánica, diosa del Amor, la Belleza y la Fertilidad.', 'img/hidromielfreyja.jpg', 11.99, 6);
 
 --
 -- Disparadores `productos`
@@ -214,11 +234,9 @@ INSERT INTO `productos_actualizados` (`id`, `nombre_nuevo`, `descripcion_nuevo`,
 --
 
 CREATE TABLE `productos_facturas` (
-  `id_factura` int(11) NOT NULL,
   `id_producto` int(11) NOT NULL,
-  `nombre` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
-  `cantidad` int(11) NOT NULL,
-  `precio` double NOT NULL
+  `id_factura` int(11) NOT NULL,
+  `cantidad` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -316,13 +334,13 @@ ALTER TABLE `subcategorias`
 -- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `facturas`
 --
 ALTER TABLE `facturas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `facturas_eliminadas`
@@ -334,7 +352,7 @@ ALTER TABLE `facturas_eliminadas`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `productos_actualizados`
