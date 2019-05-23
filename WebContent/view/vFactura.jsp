@@ -25,6 +25,7 @@
  		for(int i=0; i<factura.size();i++){
  		%>
 <body>
+
 	<div class="container">
 
 		<div class="col-xs-6">
@@ -88,10 +89,19 @@
 				}%>
 			</tbody>
 			</table>
-		<div class="row total float-right">
-			<div class="col-xs-3 col-xs-offset-7 "><strong>Total: <%=total %> $</strong></div>
-		</div>
+			<div class="row total float-right">
+				<div class="col-xs-3 col-xs-offset-7 Heading h5"><strong>IVA(21%): <%=total*0.21 %> $</strong></div>
+			</div>
+			<br>
+			<div class="row total float-right">
+				<div class="col-xs-3 col-xs-offset-7 Heading h3"><strong>Total: <%=(total*0.21)+total %> $</strong></div>
+			</div>
+			
 	</div>
 	<%}%>
+	<!--
+		 Copyright © 2019-2019 Destila2 All rights reserved.
+		 Destila3 Commingsoon
+	-->
 </body>
 </html>
