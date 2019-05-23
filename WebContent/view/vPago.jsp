@@ -100,6 +100,7 @@
         	 	url:'CCrearFactura',
         	 	success: function(result){
         	 		alert('Gracias por realizar la compra');
+        	 		window.open('http://localhost:8080/Proyecto_destila2/CVerFacturas?idFactura=' +result);
         	 		
         	 	},
         	 	error: function(xhr){

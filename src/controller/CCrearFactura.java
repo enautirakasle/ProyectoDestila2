@@ -1,6 +1,8 @@
 package controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -77,7 +79,13 @@ public class CCrearFactura extends HttpServlet {
 				lineaFactura.insertLinea();
 			}
 			
-			request.setAttribute("idFactura", idFactura);
+			response.setHeader("Access-Control-Allow-Origin","*"); //jsonp deia denean ez da behar
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			
+			PrintWriter out = response.getWriter();
+			out.print(idFactura);
+			out.flush();
 			//request.getRequestDispatcher("view/vCompra.jsp").forward(request, response);
 			
 			//System.out.println("comp:" + comprador + " Carrito:" +carrito );
