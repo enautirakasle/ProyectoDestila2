@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-05-2019 a las 13:08:58
+-- Tiempo de generación: 22-05-2019 a las 13:33:43
 -- Versión del servidor: 10.1.39-MariaDB
 -- Versión de PHP: 7.3.5
 
@@ -94,7 +94,8 @@ CREATE TABLE `facturas` (
 
 INSERT INTO `facturas` (`id`, `fecha_compra`, `comprador`, `direccion`, `telefono`, `dni`) VALUES
 (5, '2019-05-22', 'Carlos Isla', 'BI-2238, 53', 654782422, '98547535C'),
-(7, '2019-05-22', 'Carlos Isla', 'Arteaga', 654987315, '59314522K');
+(7, '2019-05-22', 'Carlos Isla', 'Arteaga', 654987315, '59314522K'),
+(11, '2019-05-22', 'Ibai Acha', 'Calle askatasuna 37', 688452157, '56548732K');
 
 -- --------------------------------------------------------
 
@@ -227,7 +228,12 @@ INSERT INTO `productos_facturas` (`id_factura`, `id_producto`, `nombre`, `cantid
 (7, 19, '0', 1, 8),
 (7, 22, '0', 1, 12),
 (7, 21, '0', 1, 12),
-(7, 20, '0', 1, 8);
+(7, 20, '0', 1, 8),
+(11, 1, 'Fuego Valyrio', 2, 15.5),
+(11, 6, 'Fuckermaister', 2, 12.25),
+(11, 5, 'Calavera Verde', 1, 18.3),
+(11, 10, 'Gin Eco Martes Santo', 2, 35),
+(11, 22, 'Hidromiel Freyja', 3, 11.99);
 
 -- --------------------------------------------------------
 
@@ -323,7 +329,7 @@ ALTER TABLE `subcategorias`
 -- AUTO_INCREMENT de la tabla `facturas`
 --
 ALTER TABLE `facturas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `facturas_eliminadas`

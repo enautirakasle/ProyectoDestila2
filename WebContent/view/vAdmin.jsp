@@ -118,7 +118,7 @@
           										<tr>
               										<th>Id</th>
               										<th>Comprador</th>
-              										<th>Seleccionar</th>
+              										<th>Ver Factura</th>
               										<th>Borrar</th>
           										</tr>
           									</thead>	

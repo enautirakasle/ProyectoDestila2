@@ -15,7 +15,7 @@
   }
   .total{
   margin-right:10px;
-  
+  margin-left:10px;
   }
   </style>
 <title>Factura</title>
@@ -94,14 +94,28 @@
 			</div>
 			<br>
 			<div class="row total float-right">
+				<div class="col-xs-3 col-xs-offset-7 Heading h3"><strong>Total sin IVA: <%=total %> $</strong></div>
+			</div>
+			<br>
+			<div class="row total float-right">
 				<div class="col-xs-3 col-xs-offset-7 Heading h3"><strong>Total: <%=(total*0.21)+total %> $</strong></div>
 			</div>
-			
+			<div class="row total float-left">
+				<a class="imprimir btn btn-primary float-left" href="#">Imprimir</a>
+			</div>
 	</div>
 	<%}%>
 	<!--
 		 Copyright © 2019-2019 Destila2 All rights reserved.
 		 Destila3 Commingsoon
 	-->
+<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+crossorigin="anonymous"></script>
+<script type="text/javascript">
+$('.imprimir').click(function(){
+    window.print();
+    return false;
+});</script>
+
 </body>
 </html>
